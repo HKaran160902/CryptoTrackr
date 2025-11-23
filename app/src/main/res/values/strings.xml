@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CryptoTrackr</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_watchlist">Watchlist</string>
+    <string name="nav_alerts">Alerts</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home Screen -->
+    <string name="search_crypto">Search cryptocurrency...</string>
+    <string name="market_cap">Market Cap</string>
+    <string name="volume_24h">24h Volume</string>
+
+    <!-- Coin Detail -->
+    <string name="price_chart">Price Chart</string>
+    <string name="add_to_watchlist">Add to Watchlist</string>
+    <string name="remove_from_watchlist">Remove from Watchlist</string>
+    <string name="set_price_alert">Set Price Alert</string>
+    <string name="high_24h">24h High</string>
+    <string name="low_24h">24h Low</string>
+
+    <!-- Watchlist -->
+    <string name="watchlist_empty">Your watchlist is empty</string>
+    <string name="watchlist_empty_desc">Add coins from the home screen to track them here</string>
+
+    <!-- Alerts -->
+    <string name="alerts_empty">No price alerts set</string>
+    <string name="alerts_empty_desc">Set alerts to get notified when prices reach your target</string>
+    <string name="alert_above">Above</string>
+    <string name="alert_below">Below</string>
+    <string name="target_price">Target Price</string>
+
+    <!-- Profile -->
+    <string name="portfolio_value">Portfolio Value</string>
+    <string name="total_invested">Total Invested</string>
+    <string name="profit_loss">Profit/Loss</string>
+    <string name="my_holdings">My Holdings</string>
+    <string name="add_holding">Add Holding</string>
+    <string name="holdings_empty">No holdings added</string>
+    <string name="holdings_empty_desc">Add your crypto holdings to track your portfolio</string>
+
+    <!-- Settings -->
+    <string name="appearance">Appearance</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="currency">Currency</string>
+    <string name="notifications">Notifications</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="clear_cache">Clear Cache</string>
+    <string name="about">About</string>
+    <string name="version">Version</string>
+
+    <!-- Common -->
+    <string name="retry">Retry</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="confirm">Confirm</string>
+    <string name="loading">Loading...</string>
+    <string name="error_occurred">An error occurred</string>
+    <string name="no_internet">No internet connection</string>
+
+    <!-- Time Periods -->
+    <string name="period_24h">24H</string>
+    <string name="period_7d">7D</string>
+    <string name="period_30d">30D</string>
+    <string name="period_1y">1Y</string>
+</resources>

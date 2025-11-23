@@ -1,0 +1,30 @@
+[
+    {
+        "merged": "com.hari.pdd.cryptotrackr.app-debug-69:/drawable_ic_notification.xml.flat",
+        "source": "com.hari.pdd.cryptotrackr.app-main-71:/drawable/ic_notification.xml"
+    },
+    {
+        "merged": "com.hari.pdd.cryptotrackr.app-debug-69:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.hari.pdd.cryptotrackr.app-main-71:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.hari.pdd.cryptotrackr.app-debug-69:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.hari.pdd.cryptotrackr.app-main-71:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.hari.pdd.cryptotrackr.app-debug-69:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.hari.pdd.cryptotrackr.app-main-71:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.hari.pdd.cryptotrackr.app-debug-69:/xml_backup_rules.xml.flat",
+        "source": "com.hari.pdd.cryptotrackr.app-main-71:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.hari.pdd.cryptotrackr.app-debug-69:/xml_network_security_config.xml.flat",
+        "source": "com.hari.pdd.cryptotrackr.app-main-71:/xml/network_security_config.xml"
+    },
+    {
+        "merged": "com.hari.pdd.cryptotrackr.app-debug-69:/xml_data_extraction_rules.xml.flat",
+        "source": "com.hari.pdd.cryptotrackr.app-main-71:/xml/data_extraction_rules.xml"
+    }
+]
