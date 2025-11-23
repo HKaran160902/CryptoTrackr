@@ -1,6 +1,7 @@
 package com.hari.pdd.cryptotrackr.ui.screens.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +45,7 @@ import coil.compose.AsyncImage
 import com.hari.pdd.cryptotrackr.domain.model.ChartPeriod
 import com.hari.pdd.cryptotrackr.ui.components.buttons.CryptoPrimaryButton
 import com.hari.pdd.cryptotrackr.ui.components.cards.CryptoCard
+import com.hari.pdd.cryptotrackr.ui.components.cards.StatCard
 import com.hari.pdd.cryptotrackr.ui.components.charts.PriceLineChart
 import com.hari.pdd.cryptotrackr.ui.components.chips.PriceChangeChip
 import com.hari.pdd.cryptotrackr.ui.components.states.ErrorState
@@ -52,14 +55,17 @@ import com.hari.pdd.cryptotrackr.ui.components.states.LoadingIndicatorSmall
 import com.hari.pdd.cryptotrackr.ui.components.topbar.CryptoTopBar
 import com.hari.pdd.cryptotrackr.ui.screens.detail.components.AddAlertDialog
 import com.hari.pdd.cryptotrackr.ui.theme.Background
+import com.hari.pdd.cryptotrackr.ui.theme.ChartGreen
+import com.hari.pdd.cryptotrackr.ui.theme.ChartRed
 import com.hari.pdd.cryptotrackr.ui.theme.Primary
 import com.hari.pdd.cryptotrackr.ui.theme.Secondary
 import com.hari.pdd.cryptotrackr.ui.theme.Surface
 import com.hari.pdd.cryptotrackr.ui.theme.TextPrimary
 import com.hari.pdd.cryptotrackr.ui.theme.TextSecondary
-import com.hari.pdd.cryptotrackr.util.formatMarketCap
+import com.hari.pdd.cryptotrackr.util.formatMarketCapWithCurrency
 import com.hari.pdd.cryptotrackr.util.formatPrice
 import com.hari.pdd.cryptotrackr.util.formatSupply
+import com.hari.pdd.cryptotrackr.util.getCurrencySymbol
 
 @Composable
 fun CoinDetailScreen(
@@ -110,6 +116,7 @@ fun CoinDetailScreen(
 
             uiState.coinDetail != null -> {
                 val coin = uiState.coinDetail!!
+                val currency = uiState.currency
 
                 Column(
                     modifier = Modifier
@@ -135,7 +142,7 @@ fun CoinDetailScreen(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = coin.currentPrice.formatPrice(),
+                                text = coin.currentPrice.formatPrice(currency),
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = TextPrimary
@@ -156,7 +163,9 @@ fun CoinDetailScreen(
 
                     // Chart Period Selector
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         ChartPeriod.entries.forEach { period ->
@@ -209,29 +218,154 @@ fun CoinDetailScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Stats Grid
-                    Text(
-                        text = "Statistics",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = TextPrimary
-                    )
+                    // Statistics Grid (2 columns)
+                    val fdv = coin.maxSupply?.let { coin.currentPrice * it }
+                        ?: coin.totalSupply?.let { coin.currentPrice * it }
+                    val volMktCapRatio = if (coin.marketCap > 0) {
+                        (coin.totalVolume.toDouble() / coin.marketCap.toDouble()) * 100
+                    } else 0.0
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        StatCard(
+                            label = "Market Cap",
+                            value = coin.marketCap.formatMarketCapWithCurrency(currency),
+                            modifier = Modifier.weight(1f)
+                        )
+                        StatCard(
+                            label = "Volume (24h)",
+                            value = coin.totalVolume.formatMarketCapWithCurrency(currency),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        StatCard(
+                            label = "FDV",
+                            value = fdv?.let { it.toLong().formatMarketCapWithCurrency(currency) } ?: "N/A",
+                            modifier = Modifier.weight(1f)
+                        )
+                        StatCard(
+                            label = "Vol/Mkt Cap (24h)",
+                            value = String.format("%.2f%%", volMktCapRatio),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        StatCard(
+                            label = "Total Supply",
+                            value = coin.totalSupply?.formatSupply() ?: "N/A",
+                            modifier = Modifier.weight(1f)
+                        )
+                        StatCard(
+                            label = "Max Supply",
+                            value = coin.maxSupply?.formatSupply() ?: "N/A",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Price Performance Section
                     CryptoCard {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            StatRow("Market Cap Rank", "#${coin.marketCapRank}")
-                            StatRow("Market Cap", "$${coin.marketCap.formatMarketCap()}")
-                            StatRow("24h Volume", "$${coin.totalVolume.formatMarketCap()}")
-                            StatRow("24h High", coin.high24h.formatPrice())
-                            StatRow("24h Low", coin.low24h.formatPrice())
-                            StatRow("Circulating Supply", coin.circulatingSupply.formatSupply())
-                            coin.totalSupply?.let {
-                                StatRow("Total Supply", it.formatSupply())
+                            Text(
+                                text = "Price Performance",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = TextPrimary
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // All-Time High
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Column {
+                                    Text(
+                                        text = "All-time high",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextSecondary
+                                    )
+                                    coin.athDate?.let { date ->
+                                        Text(
+                                            text = formatDate(date),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = TextSecondary
+                                        )
+                                    }
+                                }
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = coin.ath.formatPrice(currency),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        color = TextPrimary
+                                    )
+                                    Text(
+                                        text = String.format("%.2f%%", coin.athChangePercentage),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Medium,
+                                        color = if (coin.athChangePercentage >= 0) ChartGreen else ChartRed
+                                    )
+                                }
                             }
-                            StatRow("All-Time High", coin.ath.formatPrice())
-                            StatRow("All-Time Low", coin.atl.formatPrice())
+
+                            Spacer(modifier = Modifier.height(12.dp))
+                            HorizontalDivider(color = TextSecondary.copy(alpha = 0.2f))
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // All-Time Low
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Column {
+                                    Text(
+                                        text = "All-time low",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextSecondary
+                                    )
+                                    coin.atlDate?.let { date ->
+                                        Text(
+                                            text = formatDate(date),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = TextSecondary
+                                        )
+                                    }
+                                }
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = coin.atl.formatPrice(currency),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        color = TextPrimary
+                                    )
+                                    Text(
+                                        text = String.format("+%.2f%%", coin.atlChangePercentage),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Medium,
+                                        color = if (coin.atlChangePercentage >= 0) ChartGreen else ChartRed
+                                    )
+                                }
+                            }
                         }
                     }
 
@@ -254,24 +388,13 @@ fun CoinDetailScreen(
     }
 }
 
-@Composable
-private fun StatRow(label: String, value: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = TextSecondary
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = TextPrimary
-        )
+private fun formatDate(isoDate: String): String {
+    return try {
+        val inputFormat = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault())
+        val outputFormat = java.text.SimpleDateFormat("MMM d, yyyy", java.util.Locale.getDefault())
+        val date = inputFormat.parse(isoDate.substringBefore("."))
+        date?.let { outputFormat.format(it) } ?: isoDate
+    } catch (e: Exception) {
+        isoDate.substringBefore("T")
     }
 }

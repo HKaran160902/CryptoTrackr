@@ -3,12 +3,14 @@ package com.hari.pdd.cryptotrackr.ui.screens.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hari.pdd.cryptotrackr.data.local.preferences.UserPreferences
 import com.hari.pdd.cryptotrackr.domain.model.ChartPeriod
 import com.hari.pdd.cryptotrackr.domain.model.PriceAlert
 import com.hari.pdd.cryptotrackr.domain.repository.AlertRepository
 import com.hari.pdd.cryptotrackr.domain.repository.CoinRepository
 import com.hari.pdd.cryptotrackr.domain.repository.WatchlistRepository
 import com.hari.pdd.cryptotrackr.util.Resource
+import com.hari.pdd.cryptotrackr.worker.PriceAlertScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +25,8 @@ class CoinDetailViewModel @Inject constructor(
     private val coinRepository: CoinRepository,
     private val watchlistRepository: WatchlistRepository,
     private val alertRepository: AlertRepository,
+    private val priceAlertScheduler: PriceAlertScheduler,
+    private val userPreferences: UserPreferences,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -34,9 +38,26 @@ class CoinDetailViewModel @Inject constructor(
     private var chartJob: Job? = null
 
     init {
+        observeCurrency()
         loadCoinDetail()
         loadChart()
         observeWatchlist()
+    }
+
+    private fun observeCurrency() {
+        viewModelScope.launch {
+            var isFirstEmission = true
+            userPreferences.currency.collect { currency ->
+                val currencyChanged = _uiState.value.currency != currency
+                _uiState.update { it.copy(currency = currency) }
+
+                if (!isFirstEmission && currencyChanged) {
+                    loadCoinDetail()
+                    loadChart()
+                }
+                isFirstEmission = false
+            }
+        }
     }
 
     fun onEvent(event: CoinDetailEvent) {
@@ -142,6 +163,7 @@ class CoinDetailViewModel @Inject constructor(
                 isAbove = isAbove
             )
             alertRepository.addAlert(alert)
+            priceAlertScheduler.scheduleAlertCheck()
             _uiState.update { it.copy(showAddAlertDialog = false) }
         }
     }

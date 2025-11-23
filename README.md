@@ -20,6 +20,7 @@ A modern Android cryptocurrency tracking application built with Jetpack Compose 
 - **Search** - Find any cryptocurrency with real-time search results
 - **Trending Coins** - Discover trending cryptocurrencies
 - **Theme Support** - Dynamic colors with Dark/Light theme support
+- **Multi-Currency Support** - View prices in USD, EUR, GBP, INR, JPY, and more
 
 ---
 

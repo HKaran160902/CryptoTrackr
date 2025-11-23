@@ -102,6 +102,9 @@ class CoinRepositoryImpl @Inject constructor(
     override fun getCoinDetail(coinId: String): Flow<Resource<CoinDetail>> = flow {
         emit(Resource.Loading())
 
+        // Get selected currency
+        val currency = userPreferences.currency.first()
+
         // Try to get cached basic coin data first - emit immediately if available
         val cachedCoin = coinDao.getCoinById(coinId)
 
@@ -142,7 +145,7 @@ class CoinRepositoryImpl @Inject constructor(
         // Try to fetch fresh data from API
         try {
             val response = api.getCoinDetail(coinId)
-            emit(Resource.Success(response.toDomain()))
+            emit(Resource.Success(response.toDomain(currency)))
         } catch (e: Exception) {
             // If network failed and we already emitted cache, just log the error
             // If no cache was available, emit error

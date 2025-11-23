@@ -13,7 +13,8 @@ data class CoinDetailUiState(
     val chartError: String? = null,
     val selectedPeriod: ChartPeriod = ChartPeriod.DAY_1,
     val isInWatchlist: Boolean = false,
-    val showAddAlertDialog: Boolean = false
+    val showAddAlertDialog: Boolean = false,
+    val currency: String = "usd"
 )
 
 sealed class CoinDetailEvent {

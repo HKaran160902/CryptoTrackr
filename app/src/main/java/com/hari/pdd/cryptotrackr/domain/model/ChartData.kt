@@ -12,8 +12,11 @@ data class PricePoint(
 )
 
 enum class ChartPeriod(val days: String, val label: String) {
-    DAY_1("1", "24H"),
-    WEEK_1("7", "7D"),
-    MONTH_1("30", "30D"),
-    YEAR_1("365", "1Y")
+    DAY_1("1", "1D"),
+    WEEK_1("7", "1W"),
+    MONTH_1("30", "1M"),
+    MONTH_3("90", "3M"),
+    MONTH_6("180", "6M"),
+    YEAR_1("365", "1Y"),
+    YEAR_5("1825", "5Y")
 }

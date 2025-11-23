@@ -54,7 +54,7 @@ private fun formatWithCommas(value: Double): String {
     return formatter.format(value)
 }
 
-private fun getCurrencySymbol(currency: String): String {
+fun getCurrencySymbol(currency: String): String {
     return when (currency.lowercase()) {
         "usd" -> "$"
         "eur" -> "€"
@@ -64,6 +64,17 @@ private fun getCurrencySymbol(currency: String): String {
         "aud", "cad" -> "$"
         "chf" -> "CHF "
         else -> "$"
+    }
+}
+
+fun Long.formatMarketCapWithCurrency(currency: String): String {
+    val symbol = getCurrencySymbol(currency)
+    return when {
+        this >= 1_000_000_000_000 -> "$symbol${String.format(Locale.US, "%.2fT", this / 1_000_000_000_000.0)}"
+        this >= 1_000_000_000 -> "$symbol${String.format(Locale.US, "%.2fB", this / 1_000_000_000.0)}"
+        this >= 1_000_000 -> "$symbol${String.format(Locale.US, "%.2fM", this / 1_000_000.0)}"
+        this >= 1_000 -> "$symbol${String.format(Locale.US, "%.2fK", this / 1_000.0)}"
+        else -> "$symbol$this"
     }
 }
 
